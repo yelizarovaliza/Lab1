@@ -80,7 +80,7 @@ def shear(shape, axis, shear_factor):
 def transform(shape, transformation_matrix):
     return shape @ transformation_matrix.T
 
-# 3D transformation functions
+# 3D transformation
 def rotate_3d(shape, axis, angle):
     radians = np.deg2rad(angle)
     if axis == 'x':
@@ -111,7 +111,7 @@ def scale_3d(shape, scale_factor):
 
 
 
-# Image transformation functions
+# Image transformation
 def rotate_image(image, angle):
     (h, w) = image.shape[:2]
     center = (w / 2, h / 2)
@@ -145,10 +145,11 @@ def transform_image(image, matrix):
 # Load image
 image = cv2.imread('image.jpg')
 
-# Menu function
+# Menu
 def menu():
     while True:
         print("\nChoose an option:")
+        print("0. Exit")
         print("1. Show initial shape")
         print("2. Rotate")
         print("3. Scale")
@@ -158,11 +159,11 @@ def menu():
         print("7. Rotate 3D (only for 3D figure)")
         print("8. Scale 3D (only for 3D figure)")
         print("9. Image Transformations")
-        print("10. Exit")
+        
         
         choice = input("Enter the number of your choice: ")
         
-        if choice == '10':
+        if choice == '0':
             break
         
         if choice == '1':
