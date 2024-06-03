@@ -63,6 +63,7 @@ def reflect(shape, axis):
             [0, 1]
         ])
     return shape @ reflection_matrix.T
+
 # shearing
 def shear(shape, axis, shear_factor):
     if axis == 'x':
@@ -107,8 +108,6 @@ def rotate_3d(shape, axis, angle):
 def scale_3d(shape, scale_factor):
     scaling_matrix = np.diag([scale_factor, scale_factor, scale_factor])
     return shape @ scaling_matrix.T
-
-
 
 
 # Image transformation
