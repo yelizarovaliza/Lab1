@@ -42,6 +42,10 @@ def rotate(shape, angle):
     ])
     return shape @ rotation_matrix.T
 
+def rotatecv(shape, angle):
+    rotation_matrix = cv2.getRotationMatrix2D((0, 0), angle, 1)
+    return shape @ rotation_matrix[:, :2].T
+
 # scaling
 def scale(shape, scale_factor):
     scaling_matrix = np.array([
@@ -49,6 +53,9 @@ def scale(shape, scale_factor):
         [0, scale_factor]
     ])
     return shape @ scaling_matrix.T
+
+def scalecv(shape, scale_factor):
+    return shape * scale_factor
 
 # reflection
 def reflect(shape, axis):
@@ -63,6 +70,12 @@ def reflect(shape, axis):
             [0, 1]
         ])
     return shape @ reflection_matrix.T
+
+def reflectcv(shape, axis):
+    if axis == 'x':
+        return cv2.flip(shape, 1)
+    elif axis == 'y':
+        return cv2.flip(shape, 0)
 
 # shearing
 def shear(shape, axis, shear_factor):
@@ -104,11 +117,36 @@ def rotate_3d(shape, axis, angle):
         ])
     return shape @ rotation_matrix.T
 
+def rotate_3dcv(shape, axis, angle):
+    radians = np.deg2rad(angle)
+    if axis == 'x':
+        rotation_matrix = np.array([
+            [1, 0, 0],
+            [0, np.cos(radians), -np.sin(radians)],
+            [0, np.sin(radians), np.cos(radians)]
+        ], dtype=np.float32)
+    elif axis == 'y':
+        rotation_matrix = np.array([
+            [np.cos(radians), 0, np.sin(radians)],
+            [0, 1, 0],
+            [-np.sin(radians), 0, np.cos(radians)]
+        ], dtype=np.float32)
+    elif axis == 'z':
+        rotation_matrix = np.array([
+            [np.cos(radians), -np.sin(radians), 0],
+            [np.sin(radians), np.cos(radians), 0],
+            [0, 0, 1]
+        ], dtype=np.float32)
+    return shape @ rotation_matrix.T
+
 # custom matrix
 def scale_3d(shape, scale_factor):
     scaling_matrix = np.diag([scale_factor, scale_factor, scale_factor])
     return shape @ scaling_matrix.T
 
+def scale_3dnp(shape, scale_factor):
+    scaling_matrix = np.diag([scale_factor, scale_factor, scale_factor]).astype(np.float32)
+    return shape @ scaling_matrix.T
 
 # Image transformation
 def rotate_image(image, angle):
@@ -197,14 +235,14 @@ def menu():
             if choice == '2':  # Rotate
                 angle = float(input("Enter the angle of rotation: "))
                 if figure_choice == '1':
-                    result = rotate(triangle, angle)
+                    result = rotatecv(triangle, angle)
                     plot_shape(result, f"Rotated Triangle by {angle} degrees")
                 elif figure_choice == '2':
                     result = rotate(polygon, angle)
                     plot_shape(result, f"Rotated Polygon by {angle} degrees")
                 elif figure_choice == '3':
                     axis = input("Enter the axis of rotation (x, y, or z): ").lower()
-                    result = rotate_3d(tetrahedron, axis, angle)
+                    result = rotate_3dcv(tetrahedron, axis, angle)
                     plot_3d_shape(result, f"Rotated Tetrahedron by {angle} degrees along {axis} axis")
             
             elif choice == '3':  # Scale
@@ -213,10 +251,10 @@ def menu():
                     result = scale(triangle, scale_factor)
                     plot_shape(result, f"Scaled Triangle by factor {scale_factor}")
                 elif figure_choice == '2':
-                    result = scale(polygon, scale_factor)
+                    result = scalecv(polygon, scale_factor)
                     plot_shape(result, f"Scaled Polygon by factor {scale_factor}")
                 elif figure_choice == '3':
-                    result = scale_3d(tetrahedron, scale_factor)
+                    result = scale_3dnp(tetrahedron, scale_factor)
                     plot_3d_shape(result, f"Scaled Tetrahedron by factor {scale_factor}")
             
             elif choice == '4':  # Reflect
@@ -225,7 +263,7 @@ def menu():
                     result = reflect(triangle, axis)
                     plot_shape(result, f"Reflected Triangle over {axis.upper()} axis")
                 elif figure_choice == '2':
-                    result = reflect(polygon, axis)
+                    result = reflectcv(polygon, axis)
                     plot_shape(result, f"Reflected Polygon over {axis.upper()} axis")
             
             elif choice == '5':  # Shear
